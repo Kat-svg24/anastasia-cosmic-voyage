@@ -27,7 +27,7 @@ function haze(x,y,r,a){if(a<=0)return;const g=ctx.createRadialGradient(x,y,0,x,y
 function burst(w,h,t){const x=w*(.17+Math.random()*.66),y=h*(.12+.36*Math.random()),radius=Math.min(w*.46,h*.38),hue=[38,312,265,12][Math.floor(Math.random()*4)];
  for(let j=0;j<165;j++){const angle=2*Math.PI*j/165+Math.random()*.025,v=radius*(.3+Math.random()*.83);sparks.push({x,y,dx:Math.cos(angle)*v,dy:Math.sin(angle)*v,born:t,hue:hue+Math.random()*28,life:1.6+Math.random()*.95})}
  for(let j=0;j<12;j++)puffs.push({x:x+(Math.random()-.5)*40,y,dx:(Math.random()-.5)*50,dy:-15-Math.random()*28,r:20,life:3.8,born:t,alpha:.08});popSound()}
-let last=0,emitAt=0;
+let emitAt=0;
 function frame(ms){const w=innerWidth,h=innerHeight,t=ms/1000;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}ctx.clearRect(0,0,w,h);
  skyStars.slice(0,180).forEach(([x,y,k])=>{ctx.fillStyle='rgba(233,222,255,'+(.4+.22*Math.sin((reduced?0:t)+k*12))+')';ctx.fillRect(x*w,y*h,1+k,1+k)});
  if(page===1||page===2){const size=Math.min(w*.6,h*.46);for(const [r,j,k] of skyStars){const a=r*8+Math.floor(j*3)*2.094+k*.68+(reduced?0:t*.035),x=Math.cos(a)*r*size,y=Math.sin(a)*r*size*.25;ctx.fillStyle=k>.8?'#e1acdb':'#9381b7';ctx.fillRect(w*.5+x,h*.82+y-x*.12,k+1,k+.45)}}
