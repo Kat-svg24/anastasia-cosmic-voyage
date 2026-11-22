@@ -36,4 +36,30 @@ function frame(ms){const w=innerWidth,h=innerHeight,t=ms/1000;if(cv.width!==w||c
  puffs=puffs.filter(p=>t-p.born<p.life);for(const p of puffs){const a=t-p.born,u=a/p.life;haze(p.x+p.dx*a+Math.sin(a*3+p.x)*a*13,p.y+p.dy*a,p.r+u*(p.r===3?w*.28:85),p.alpha*(1-u))}
  sparks=sparks.filter(p=>t-p.born<p.life);for(const p of sparks){const age=t-p.born,u=age/p.life;function pos(a){const drag=1-Math.exp(-a*1.8);return [p.x+p.dx*drag,p.y+p.dy*drag+28*a*a]}ctx.beginPath();ctx.moveTo(...pos(Math.max(0,age-.08)));ctx.lineTo(...pos(age));ctx.strokeStyle='hsla('+p.hue+',95%,75%,'+(1-u)+')';ctx.lineWidth=1.8*(1-u)+.35;ctx.stroke()}}
  requestAnimationFrame(frame)}
+fortunes.splice(0,fortunes.length,...["В этом году у тебя будет много счастливых дней. Некоторые начнутся совсем обыкновенно.","Однажды ты поступишь по-своему и получишь больше, чем рассчитывала.","То, что ты попробуешь из любопытства, станет твоим любимым делом.","Одно смелое решение окажется началом спокойной жизни.","Рядом окажется человек, с которым ты почувствуешь себя дома.","Давнее желание сбудется совсем иначе, чем ты представляла. И тебе так понравится больше.","Ты снова почувствуешь себя любимой в мелочах, которые замечаешь только ты.","Ты выберешь то, что радует именно тебя. С каждым разом это будет легче.","Случайное знакомство однажды обернётся крепкой дружбой.","В твоей жизни появится место, куда захочется возвращаться.","Однажды ты увидишь в себе то хорошее, что другие давно в тебе видят.","К следующему ноябрю одна из твоих мечт станет частью обычного дня."]);
+const pickFortune=predict;
+predict=function(){
+ pickFortune();
+ dlg.querySelector('h2').textContent='Твоё предсказание';
+ if(reduced)return;
+ const box=dlg.getBoundingClientRect();
+ const sky=document.createElement('div');
+ sky.setAttribute('aria-hidden','true');
+ sky.style.cssText='position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:10';
+ dlg.append(sky);
+ const shapes=['♥','✦','💎','★'];
+ const colors=['#ff88ae','#ffdc84','#8ce9ff','#e9b8ff'];
+ for(let burst=0;burst<3;burst++){
+ const x=burst===1?box.right-8:burst===0?box.left+12:box.left+box.width*.55;
+ const y=burst===2?box.bottom-6:box.top+8;
+ for(let j=0;j<22;j++){
+ const spark=document.createElement('span'),kind=(j+burst)%4;
+ spark.textContent=shapes[kind];
+ spark.style.cssText='position:absolute;opacity:0;left:'+x+'px;top:'+y+'px;color:'+colors[kind]+';font-size:'+(12+Math.random()*10)+'px;text-shadow:0 0 6px currentColor';
+ sky.append(spark);
+ const a=(Math.PI*2*j/22)+Math.random()*.13,d=55+Math.random()*95,dx=d*Math.cos(a),dy=d*Math.sin(a);
+ spark.animate([{transform:'scale(.2)',opacity:0},{offset:.12,opacity:1},{offset:.67,transform:'translate('+dx*.83+'px,'+dy*.83+'px) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+(dy+36)+'px) rotate(45deg) scale(.5)',opacity:0}],{duration:1300+Math.random()*350,delay:burst*240,easing:'ease-out'});
+ }}
+ const remove=()=>sky.remove();dlg.addEventListener('close',remove,{once:true});setTimeout(()=>{remove();dlg.removeEventListener('close',remove)},2250);
+};
 draw();requestAnimationFrame(frame);</script></html>
