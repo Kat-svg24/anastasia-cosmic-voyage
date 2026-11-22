@@ -1,8 +1,16 @@
 ---
 layout: null
 ---
+{% capture intro_styles %}</style><style>
+main[data-scene="0"] { grid-template-columns: minmax(0, 1fr); }
+main[data-scene="0"] section { width: 100%; min-width: 0; text-align: center; }
+@media (max-width: 600px) {
+  main[data-scene="0"] { padding-inline: 16px; }
+  main[data-scene="0"] h1 { font-size: clamp(24px, 10.5vw, 54px); }
+}
+</style>{% endcapture %}
 {% capture original %}{% include card.html %}{% endcapture %}
-{{ original | split: 'let stars=Array.from' | first | replace: '</style>', '</style><link rel="stylesheet" href="effects.css">' | replace: 'Вселенная<br>слышит<br><em>не всех.</em>', 'Вселенная<br><em>не всех</em> слышит.' | replace: '<i class=moon></i>', '' }}
+{{ original | split: 'let stars=Array.from' | first | replace: '</style>', '</style><link rel="stylesheet" href="effects.css">' | replace: 'Вселенная<br>слышит<br><em>не всех.</em>', 'Вселенная<br><em>не всех</em> слышит.' | replace: '<i class=moon></i>', '' | replace: '</style>', intro_styles }}
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const originalDraw=draw;
 let entered=0,previousPage=-1,smokeBirth=-100,lastBurst=-100,puffs=[],sparks=[],wickPoints=[],audioFx;
@@ -18,6 +26,13 @@ function popSound(){
 draw=function(){
  originalDraw();main.dataset.scene=page;
  if(previousPage!==page){entered=performance.now()/1000;previousPage=page;sparks=[];puffs=[];smokeBirth=-100;lastBurst=entered-1}
+ if(page===4){
+   const home=document.createElement('button');
+   home.type='button';
+   home.textContent='Вернуться в начало';
+   home.addEventListener('click',()=>go(0));
+   main.querySelector('section').append(home);
+ }
  if(page===1||page===2){const label=document.createElement('div');label.className='personal-star';label.innerHTML='<i>✦</i><b>Это ты ✦</b>';main.append(label)}
  if(page===5){let n=0;for(const el of main.querySelectorAll('h1,p')){const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(const node of nodes){const frag=document.createDocumentFragment();for(const part of node.data.split(/(\s+)/)){if(!part.trim()){frag.append(part);continue}const span=document.createElement('span');span.className='reveal-word';span.style.animationDelay=(n++*.24)+'s';span.textContent=part;frag.append(span)}node.replaceWith(frag)}}}
 };
